@@ -1,0 +1,71 @@
+@model List<MoviesManager.Models.Movie>
+
+<!-- Adding styling using style attribute -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color:#cce7ff; 
+        color:#1c1b18; 
+        padding: 20px;
+    }
+
+    h2 { color: #007bff; }
+
+    a.add-btn {
+        display: inline-block;
+        margin-bottom: 15px;
+        padding: 6px 10px;
+        background-color: #007bff;
+        color: #f5f5dc;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid #444;
+    }
+
+    th { text-align: left; }
+
+    a.action-link {
+        color: red;
+        text-decoration: none;
+    }
+</style>
+
+<h2> Movies List</h2>
+
+<a href="/Movies/Create" class="add-btn">Add New Movie</a>
+
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Director</th>
+        <th>Genre</th>
+        <th>Year</th>
+        <th>Rating</th>
+        <th>Actions</th>
+    </tr>
+
+@foreach (var movie in Model)
+{
+    <tr>
+        <td>@movie.Title</td>
+        <td>@movie.Director</td>
+        <td>@movie.Genre</td>
+        <td>@movie.Year</td>
+        <td>@movie.Rating</td>
+        <td>
+            <a href="/Movies/Edit/@movie.Id" class="action-link">Edit</a> |
+            <a href="/Movies/Delete/@movie.Id" class="action-link">Delete</a>
+        </td>
+    </tr>
+}
+</table>

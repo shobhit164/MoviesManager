@@ -1,0 +1,56 @@
+@model MoviesManager.Models.Movie
+
+<!-- Adding styling using style attribute -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #cce7ff;
+        color: #1c1b18;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #007bff;
+    }
+
+    .box {
+        background-color: #e6f2ff; 
+        padding: 15px;
+        border-radius: 6px;
+        max-width: 400px;
+    }
+
+    button {
+        background-color: #dc3545;
+        color: white; 
+        font-weight: bold;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    a.cancel-link {
+        margin-left: 10px;
+        color: #0056b3;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a.cancel-link:hover {
+        color: #003d80;
+    }
+</style>
+
+
+<h2>Delete Movie</h2>
+
+<div class="box">
+    <p>Hey there! Are you sure you want to delete <strong>@Model.Title</strong> directed by @Model.Director?</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit">Yes, Delete</button>
+        <a href="/Movies" class="cancel-link">Cancel</a>
+    </form>
+</div>

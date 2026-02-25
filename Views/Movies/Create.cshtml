@@ -1,0 +1,59 @@
+@model MoviesManager.Models.Movie
+
+<!-- Adding styling using style attribute -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #cce7ff;
+        color: #1c1b18;
+        padding: 20px;
+    }
+
+    h2 { color: #007bff; }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 6px;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        background-color: #fff;
+        border: 1px solid #444;
+        color: #000;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #f5f5dc;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+</style>
+
+<h2>Add Movie</h2>
+
+<form asp-action="Create" method="post" style="max-width: 400px;">
+    <label>Title</label>
+    <input asp-for="Title" />
+
+    <label>Director</label>
+    <input asp-for="Director" />
+
+    <label>Genre</label>
+    <input asp-for="Genre" />
+
+    <label>Year</label>
+    <input asp-for="Year" />
+
+    <label>Rating</label>
+    <input asp-for="Rating" />
+
+    <button type="submit">Save</button>
+</form>
