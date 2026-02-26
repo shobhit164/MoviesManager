@@ -1,76 +1,104 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MoviesManager.Data;
 using MoviesManager.Models;
 
 namespace MoviesManager.Controllers
 {
     public class MoviesController : Controller
     {
-        // here is in-memory movies list
-        private static List<Movie> movies = new List<Movie>
+        // EF Core database context
+        private readonly MovieDbContext _context;
+
+        // Constructor injection
+        public MoviesController(MovieDbContext context)
         {
-            new Movie { Id = 1, Title = "3 Idiots", Director = "Rajkumar Hirani", Genre = "Comedy/Drama", Year = 2009, Rating = 8.4 },
-            new Movie { Id = 2, Title = "RRR", Director = "S. S. Rajamouli", Genre = "Action/Drama", Year = 2022, Rating = 7.8 },
-            new Movie { Id = 3, Title = "Forrest Gump", Director = "Robert Zemeckis", Genre = "Drama/Romance", Year = 1994, Rating = 8.8 },
-            new Movie { Id = 4, Title = "The Prestige", Director = "Christopher Nolan", Genre = "Drama/Mystery", Year = 2006, Rating = 8.5 },
-            new Movie { Id = 5, Title = "Mad Max: Fury Road", Director = "George Miller", Genre = "Action/Sci-Fi", Year = 2015, Rating = 8.1 }
-        };
-
-        private static int nextId = 6;
-
-        // This will shows all movies on the main page
-        public IActionResult Index() => View(movies);
-
-        public IActionResult Create() => View();
-
-        // Adding a new movie to the list and then returns to Index
-        [HttpPost]
-        public IActionResult Create(Movie movie)
-        {
-            movie.Id = nextId++;
-            movies.Add(movie);
-
-            return RedirectToAction("Index");
+            _context = context;
         }
 
-        public IActionResult Edit(int id)
+        // To read all movies and display them on Index page
+        public async Task<IActionResult> Index()
         {
-            var movie = movies.FirstOrDefault(m => m.Id == id);
-            if (movie == null) return NotFound();
+            var movies = await _context.Movies.ToListAsync();
+            return View(movies);
+        }
+
+        // Opens empty form to add a new movie
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+         // Saves new movie data into database after validation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Movie movie)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Movies.Add(movie);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
 
             return View(movie);
         }
 
-        [HttpPost]
-        public IActionResult Edit(Movie updatedMovie)
+        // Loads selected movie data into edit form
+        public async Task<IActionResult> Edit(int id)
         {
-            var movie = movies.FirstOrDefault(m => m.Id == updatedMovie.Id);
-            if (movie == null) return NotFound();
+            var movie = await _context.Movies.FindAsync(id);
 
-            movie.Title = updatedMovie.Title;
-            movie.Director = updatedMovie.Director;
-            movie.Genre = updatedMovie.Genre;
-            movie.Year = updatedMovie.Year;
-            movie.Rating = updatedMovie.Rating;
-
-            return RedirectToAction("Index");
-        }
-
-        // This will shows delete confirmation page and removes movie if confirmed by user
-        public IActionResult Delete(int id)
-        {
-            var movie = movies.FirstOrDefault(m => m.Id == id);
-            if (movie == null) return NotFound();
+            if (movie == null)
+                return NotFound();
 
             return View(movie);
         }
 
+        // Updates movie details in database
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Movie movie)
+        {
+            if (id != movie.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(movie);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(movie);
+        }
+
+        // Shows delete confirmation page
+        public async Task<IActionResult> Delete(int id)
+        {
+            var movie = await _context.Movies
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (movie == null)
+                return NotFound();
+
+            return View(movie);
+        }
+
+        // Permanently removes movie from database
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = movies.FirstOrDefault(m => m.Id == id);
-            if (movie != null) movies.Remove(movie);
+            var movie = await _context.Movies.FindAsync(id);
 
-            return RedirectToAction("Index");
+            if (movie != null)
+            {
+                _context.Movies.Remove(movie);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

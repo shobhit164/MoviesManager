@@ -7,6 +7,24 @@
         background-color:#cce7ff; 
         color:#1c1b18; 
         padding: 20px;
+    }  
+    
+    .header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .header-container h2 {
+        margin: 0;
+        color: #007bff;
+        font-weight: 900;  
+        font-size: 2em;    
+    }
+
+    .header-container a.add-btn {
+        margin-top: 10px;
     }
 
     h2 { color: #007bff; }
@@ -38,11 +56,29 @@
         color: red;
         text-decoration: none;
     }
+
+    a.add-btn,
+    button {
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    a.add-btn:hover,
+    button:hover {
+        background-color: #0056b3; 
+        color: #fff;               
+        transform: scale(1.05);    
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
 </style>
+<!-- I added some hover and shadow effect for better UI experience beacuse I love to play with CSS!!!! -->
 
-<h2> Movies List</h2>
 
-<a href="/Movies/Create" class="add-btn">Add New Movie</a>
+<div class = "header-container">
+    <h2> Movies List</h2>
+    <a href="/Movies/Create" class="add-btn">Add New Movie</a>
+</div>
 
 <table>
     <tr>

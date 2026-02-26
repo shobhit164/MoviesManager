@@ -9,6 +9,32 @@
         padding: 20px;
     }
 
+    .form-container {
+        display: flex;
+        flex-direction: column;  
+        align-items: center;     
+        justify-content: flex-start;
+        min-height: 80vh;      
+        padding-top: 20px;     
+    }
+
+    .form-container form {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px; 
+        font-weight: 900;  
+
+    }
+
+    .form-container button {
+        display: block;         
+        margin: 20px auto 0;   
+    }
+
     h2 { color: #007bff; }
 
     label {
@@ -27,6 +53,11 @@
         color: #000;
     }
 
+    .text {
+        color: red;
+        font-size: 0.9em;
+    }
+
     button {
         background-color: #007bff;
         color: #f5f5dc;
@@ -35,27 +66,62 @@
         cursor: pointer;
         border-radius: 4px;
     }
+
+    a.add-btn,
+    button {
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    a.add-btn:hover,
+    button:hover {
+        background-color: #0056b3; 
+        color: #fff;               
+        transform: scale(1.05);    
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+    }
 </style>
+<!-- I added some hover and shadow effect for better UI experience beacuse I love to play with CSS!!!! -->
 
-<h2>Edit Movie</h2>
 
-<form asp-action="Edit" method="post" style="max-width: 400px;">
-    <input type="hidden" asp-for="Id" />
 
-    <label>Title</label>
-    <input asp-for="Title" />
+<div class="form-container">
+ <h2>Edit Movie</h2>
+    <form asp-action="Edit" method="post" style="max-width: 400px;">
+        <input type="hidden" asp-for="Id" />
 
-    <label>Director</label>
-    <input asp-for="Director" />
+        <!-- Validation Summary -->
+        <div asp-validation-summary="ModelOnly" class="text"></div>
 
-    <label>Genre</label>
-    <input asp-for="Genre" />
+        <label>Title</label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" class="text"></span>
 
-    <label>Year</label>
-    <input asp-for="Year" />
+        <label>Director</label>
+        <input asp-for="Director" />
+        <span asp-validation-for="Director" class="text"></span>
 
-    <label>Rating</label>
-    <input asp-for="Rating" />
+        <label>Genre</label>
+        <input asp-for="Genre" />
+        <span asp-validation-for="Genre" class="text"></span>
 
-    <button type="submit">Save</button>
-</form>
+        <label>Year</label>
+        <input asp-for="Year" />
+        <span asp-validation-for="Year" class="text"></span>
+
+        <label>Rating</label>
+        <input asp-for="Rating" />
+        <span asp-validation-for="Rating" class="text"></span>
+
+        <button type="submit">Update</button>
+    </form>
+</div>
+
+<!-- I'm adding Client-side validation scripts for real time error poping -->
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.6/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}
