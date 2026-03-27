@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/shobhit/Desktop/C#.NET/c0959381_Assignment01/c0959381_MoviesManager/MoviesManager.csproj": {}
+    "/Users/shobhit/Desktop/c0959381_MoviesManager/MoviesManager.csproj": {}
   },
   "projects": {
-    "/Users/shobhit/Desktop/C#.NET/c0959381_Assignment01/c0959381_MoviesManager/MoviesManager.csproj": {
+    "/Users/shobhit/Desktop/c0959381_MoviesManager/MoviesManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/shobhit/Desktop/C#.NET/c0959381_Assignment01/c0959381_MoviesManager/MoviesManager.csproj",
+        "projectUniqueName": "/Users/shobhit/Desktop/c0959381_MoviesManager/MoviesManager.csproj",
         "projectName": "MoviesManager",
-        "projectPath": "/Users/shobhit/Desktop/C#.NET/c0959381_Assignment01/c0959381_MoviesManager/MoviesManager.csproj",
+        "projectPath": "/Users/shobhit/Desktop/c0959381_MoviesManager/MoviesManager.csproj",
         "packagesPath": "/Users/shobhit/.nuget/packages/",
-        "outputPath": "/Users/shobhit/Desktop/C#.NET/c0959381_Assignment01/c0959381_MoviesManager/obj/",
+        "outputPath": "/Users/shobhit/Desktop/c0959381_MoviesManager/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/shobhit/.nuget/NuGet/NuGet.Config"
@@ -44,19 +44,13 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
-            "Microsoft.EntityFrameworkCore": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[10.0.3, )"
+              "version": "[10.0.5, )"
             },
-            "Microsoft.EntityFrameworkCore.Sqlite": {
+            "MongoDB.Driver": {
               "target": "Package",
-              "version": "[10.0.3, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[10.0.3, )"
+              "version": "[3.7.1, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

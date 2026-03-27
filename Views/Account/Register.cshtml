@@ -1,0 +1,126 @@
+@model MoviesManager.Models.RegisterRequest
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #cce7ff;
+        color: #1c1b18;
+        padding: 20px;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 80vh;
+        padding-top: 20px;
+    }
+
+    .form-container form {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 900;
+        color: #007bff;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 6px;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        background-color: #fff;
+        border: 1px solid #444;
+        color: #000;
+    }
+
+    .text {
+        color: red;
+        font-size: 0.9em;
+    }
+
+    .msg {
+        color: green;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #f5f5dc;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+        display: block;
+        margin: 20px auto 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+        background-color: #0056b3;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .token-box {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Register</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="msg">@ViewBag.Message</div>
+    }
+
+    <form asp-action="Register" method="post">
+        <div asp-validation-summary="ModelOnly" class="text"></div>
+
+        <label>Full Name</label>
+        <input asp-for="FullName" />
+        <span asp-validation-for="FullName" class="text"></span>
+
+        <label>Email</label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email" class="text"></span>
+
+        <label>Password</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password" class="text"></span>
+
+        <button type="submit">Register</button>
+    </form>
+
+    @if (ViewBag.Token != null)
+    {
+        <div class="token-box">
+            <label>Your JWT Token</label>
+            <textarea rows="8" readonly>@ViewBag.Token</textarea>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.6/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}

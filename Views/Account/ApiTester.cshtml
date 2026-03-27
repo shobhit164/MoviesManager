@@ -1,0 +1,90 @@
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #cce7ff;
+        color: #1c1b18;
+        padding: 20px;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 80vh;
+        padding-top: 20px;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 900;
+        color: #007bff;
+    }
+
+    textarea {
+        width: 100%;
+        max-width: 700px;
+        padding: 6px;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        background-color: #fff;
+        border: 1px solid #444;
+        color: #000;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #f5f5dc;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+        background-color: #0056b3;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    pre {
+        width: 100%;
+        max-width: 700px;
+        background: white;
+        border: 1px solid #444;
+        padding: 10px;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Protected API Tester</h2>
+
+    <label style="font-weight:bold;">Paste JWT Token</label>
+    <textarea id="jwtToken" rows="8"></textarea>
+
+    <button onclick="getMovies()">Get All Movies</button>
+
+    <h3 style="margin-top:20px;">Response</h3>
+    <pre id="output"></pre>
+</div>
+
+<script>
+    async function getMovies() {
+        const token = document.getElementById("jwtToken").value;
+
+        const response = await fetch('/api/moviesapi', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        const text = await response.text();
+        document.getElementById("output").textContent = text;
+    }
+</script>

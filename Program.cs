@@ -1,64 +1,96 @@
-using Microsoft.EntityFrameworkCore;
-using MoviesManager.Data;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using MoviesManager.Models;
+using MoviesManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MVC controllers with views
+// MVC + API
 builder.Services.AddControllersWithViews();
-
-// EF Core + SQLite
-builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlite("Data Source=movies.db")); // store movies in SQLite
-
-// API & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Swagger + JWT support
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+    {
+        Title = "MoviesManager API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("bearer", new Microsoft.OpenApi.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = Microsoft.OpenApi.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        BearerFormat = "JWT",
+        Description = "Paste only the JWT token"
+    });
+
+    options.AddSecurityRequirement(document => new Microsoft.OpenApi.OpenApiSecurityRequirement
+    {
+        [new Microsoft.OpenApi.OpenApiSecuritySchemeReference("bearer", document)] = new List<string>()
+    });
+});
+
+
+// MongoDB settings
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDb"));
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var connectionString = builder.Configuration["MongoDb:ConnectionString"];
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddSingleton<JwtService>();
+
+// JWT Authentication
+var jwtKey = builder.Configuration["Jwt:Key"];
+var keyBytes = Encoding.UTF8.GetBytes(jwtKey!);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Seed initial movies
-using (var scope = app.Services.CreateScope())
+// Middleware
+if (app.Environment.IsDevelopment())
 {
-    var db = scope.ServiceProvider.GetRequiredService<MovieDbContext>();
-    db.Database.EnsureCreated(); // create DB if missing
-
-    if (!db.Movies.Any())
-    {
-        db.Movies.AddRange(
-            new Movie { Title = "3 Idiots", Director = "Rajkumar Hirani", Genre = "Comedy/Drama", Year = 2009, Rating = 8.4 },
-            new Movie { Title = "RRR", Director = "S. S. Rajamouli", Genre = "Action/Drama", Year = 2022, Rating = 7.8 },
-            new Movie { Title = "Fight Club", Director = "David Fincher", Genre = "Drama/Thriller", Year = 1999, Rating = 8.8 },
-            new Movie { Title = "Uri: The Surgical Strike", Director = "Aditya Dhar", Genre = "Action/War", Year = 2019, Rating = 8.0 },
-            new Movie { Title = "Roundhay Garden Scene", Director = "Louis Le Prince", Genre = "Documentary / real-life", Year = 1888, Rating = 0 }
-        );
-        db.SaveChanges();
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-// Configure HTTP request pipeline
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+app.UseStaticFiles();
+app.UseRouting();
 
-app.UseHttpsRedirection(); // force HTTPS
-app.UseStaticFiles();      // serve CSS, JS, images
-app.UseRouting();          // enable routing
-app.UseAuthorization();    // enforce authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
-// MVC routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Movies}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Map API controllers
 app.MapControllers();
-
-// Swagger
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.Run();

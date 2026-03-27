@@ -1,104 +1,77 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MoviesManager.Data;
+using MongoDB.Driver;
 using MoviesManager.Models;
+using MoviesManager.Services;
 
 namespace MoviesManager.Controllers
 {
-    // Base route → api/moviesapi
-    // ApiController enables automatic model validation + JSON binding
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MoviesApiController : ControllerBase
     {
-        // Database context injected using Dependency Injection
-        private readonly MovieDbContext _context;
+        private readonly MongoDbService _mongoDbService;
 
-        public MoviesApiController(MovieDbContext context)
+        public MoviesApiController(MongoDbService mongoDbService)
         {
-            _context = context;
+            _mongoDbService = mongoDbService;
         }
 
-
-        // GET: api/moviesapi
-        // It will return all the movies from the database
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> Get()
         {
-            var movies = await _context.Movies.ToListAsync();
+            var movies = await _mongoDbService.Movies.Find(_ => true).ToListAsync();
             return Ok(movies);
         }
 
-
-        // GET: api/moviesapi/1
-        // It will return a single movie by Id 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> Get(int id)
+        public async Task<ActionResult<Movie>> Get(string id)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = await _mongoDbService.Movies.Find(m => m.Id == id).FirstOrDefaultAsync();
 
-            // If movie not found error will pop → 404
             if (movie == null)
                 return NotFound();
 
             return Ok(movie);
         }
 
-
-        // POST: api/moviesapi
-        // This will create a new movie record
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Movie movie)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
+            await _mongoDbService.Movies.InsertOneAsync(movie);
 
             return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
         }
 
-
-        // PUT: api/moviesapi/1
-        // To Update an existing movie
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Movie movie)
+        public async Task<IActionResult> Put(string id, [FromBody] Movie movie)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingMovie = await _context.Movies.FindAsync(id);
+            var existingMovie = await _mongoDbService.Movies.Find(m => m.Id == id).FirstOrDefaultAsync();
 
             if (existingMovie == null)
                 return NotFound();
 
-            // Updating fields individually instead of EntityState.Modified
-            // makes the update more readable and avoids accidental overwrite
-            existingMovie.Title = movie.Title;
-            existingMovie.Director = movie.Director;
-            existingMovie.Genre = movie.Genre;
-            existingMovie.Year = movie.Year;
-            existingMovie.Rating = movie.Rating;
+            movie.Id = existingMovie.Id;
 
-            await _context.SaveChangesAsync();
+            await _mongoDbService.Movies.ReplaceOneAsync(m => m.Id == id, movie);
 
-            return NoContent(); 
+            return NoContent();
         }
 
-
-        // DELETE: api/moviesapi/1
-        // This will remove a movie permanently
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var result = await _mongoDbService.Movies.DeleteOneAsync(m => m.Id == id);
 
-            if (movie == null)
+            if (result.DeletedCount == 0)
                 return NotFound();
-
-            _context.Movies.Remove(movie);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
